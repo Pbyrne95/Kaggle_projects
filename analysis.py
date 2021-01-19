@@ -212,35 +212,35 @@ fig = px.bar(verified_end,
 
 # Engagement - Date 
 tweets_dates = new_df.Hour
-print(tweets)
 
 # Location/Tweets
 
 
-#NLP Analysis 
+# NLP Analysis 
 # Modules needed for Sentiment Analysis 
+
 # from textblob import TextBlob
 # from wordcloud import WordCloud
 # import nltk    
 # nltk.download('all')
-#defining function to split The sentiment between polarity and sibjectivity 
 
+# defining function to split The sentiment between polarity and sibjectivity 
 
 # preprocessing the text -> 
 
 
-# new_df.text = new_df.text.str.lower()
-# new_df.text.apply(lambda row:re.sub('@[^\s]+','',row))
-# # removing hashtags
-# new_df.text = new_df.text.apply(lambda row:re.sub(r'\B#\S+','',row))
-# # removing https: 
-# new_df.text = new_df.text.apply(lambda row:re.sub(r"http\S+","",row))
-# # removing special charecters from the text 
-# new_df.text = new_df.text.apply(lambda row:" ".join(re.findall(r'\w+',row)))
-# # removing multiple spaces with one space 
-# new_df.text = new_df.text.apply(lambda row: re.sub(r'\s+',' ',row,flags=re.I))
-# # removing special charecter from the username 
-# new_df.user_name = new_df.user_name.apply(lambda row:" ".join(re.findall(r'\w+',row)))
+new_df.text = new_df.text.str.lower()
+new_df.text.apply(lambda row:re.sub('@[^\s]+','',row))
+# removing hashtags
+new_df.text = new_df.text.apply(lambda row:re.sub(r'\B#\S+','',row))
+# removing https: 
+new_df.text = new_df.text.apply(lambda row:re.sub(r"http\S+","",row))
+# removing special charecters from the text 
+new_df.text = new_df.text.apply(lambda row:" ".join(re.findall(r'\w+',row)))
+# removing multiple spaces with one space 
+new_df.text = new_df.text.apply(lambda row: re.sub(r'\s+',' ',row,flags=re.I))
+# removing special charecter from the username 
+new_df.user_name = new_df.user_name.apply(lambda row:" ".join(re.findall(r'\w+',row)))
 
 
 
