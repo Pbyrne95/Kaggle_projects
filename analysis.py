@@ -8,7 +8,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import re
-
+from textblob import TextBlob
+from wordcloud import WordCloud
 
 
 
@@ -21,7 +22,8 @@ data_type = data.dtypes
 data_columns = data.columns
 data_null = len(data.isna())
 data_len = len(data)
-
+list_of_regex = [r'@[^\s]+',r'\B#\S+',r"http\S+",r'\w+']
+findall_regex_list = [r'\w+']
 
 ## deffining dfunctions to be used through the dataset 
 
@@ -34,11 +36,9 @@ def removeNull(df):
 new_df = removeNull(data)
 
 
-def onlyNums(elem):
-    return re.sub("\D+", "",elem) 
+def onlyNums(elem): return re.sub("\D+", "",elem) 
 
-def str_to_datetime(row):
-    return date.today() - datetime.strptime(str(row[:10]),'%Y-%m-%d').date() 
+def str_to_datetime(row): return date.today() - datetime.strptime(str(row[:10]),'%Y-%m-%d').date() 
 
 def df_min_max(row):
     return {
@@ -53,14 +53,7 @@ def avg_count(element,creteria):
             count+=1
     return count
 
-def total_percentage(element,creteria):
-    return creteria / (len(element) - creteria) * 100
-
-def regex_commands(row,reg_command):
-    return new_df.text.apply(lambda row: re.sub(reg_command,"",row))
-
-def findall_regax(row,reg_command):
-    return new_df.row.apply(lambda row:" ".join(re.findall(reg_command,row)))
+def total_percentage(element,creteria): return creteria / (len(element) - creteria) * 100
 
 def max_value(lis):
     dict_count = dict()
@@ -76,8 +69,7 @@ def max_value(lis):
             max_word = temp
     return max_count,max_word
    
-def list_builder(lis):
-    return [i.split(' ')[0] for i in lis if i != '']
+def list_builder(lis): return [i.split(' ')[0] for i in lis if i != '']
 
 def df_two_cats_max(df,row):
     hours_dict = dict()
@@ -92,9 +84,13 @@ def df_two_cats_max(df,row):
             hour = row1
         return [most_activity,hour]
 
-list_of_regex = ['@[^\s]+',r'\B#\S+',r"http\S+",r'\w+']
-findall_regex = r'\w+'
+def regex_commands(row,reg_command):return new_df.tweets.apply(lambda row: re.sub(reg_command,"",row))
 
+def findall_regax(row,reg_command): return new_df.tweets.apply(lambda row:" ".join(re.findall(reg_command,row)))
+
+def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
+
+def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
 # Verified Or Not 
 from datetime import datetime, date, timedelta
@@ -179,10 +175,39 @@ loc_df = loc_df.replace({"snd_loc": state_fix})
 new_df['Hour'] = sorted(pd.DatetimeIndex(new_df['date']).hour)
 new_df['Hour'] = new_df.Hour.apply(lambda row: row +1)
 
-compare_df = pd.DataFrame({
-                            "hour": new_df['Hour'] ,
-                            "interactions": total_interactions
-                             })
+
+# Engagement - Date 
+tweets_dates = new_df.Hour
+
+# Location/Tweets
+
+
+# NLP Analysis 
+
+
+# preprocessing the text for Sentimental analysis -> 
+
+new_df.tweets = new_df.tweets.str.lower()
+
+p1=0
+run_time = len(list_of_regex)-1
+while p1 < run_time:
+    if p1 < run_time:
+        new_df.tweets = new_df.tweets.apply(lambda row: regex_commands(row,list_of_regex[p1]))
+        p1+=1
+    elif p1 == run_time:
+        new_df.tweets = new_df.tweets.apply(lambda row: re.sub(r'\s+',' ',row,flags=re.I))
+        p1+=1
+
+# Dealing with special charecters
+new_df.tweets = new_df.tweets.apply(lambda row:findall_regax(row,findall_regex_list[0]))
+
+#initialising sentiment analysis using Textblob
+
+new_df['polarity'] = new_df.tweets.apply(lambda row: Text_polarity(row))
+new_df['subjectivty'] = new_df.tweets.apply(lambda row: Text_subjectivity(row))
+
+compare_times_df = new_df.Hour,new_df.tweets,new_df.polarity,new_df.subjectivty
 
 # Data Visulasation 
 
@@ -196,53 +221,18 @@ sns.heatmap(corr,annot=True)
 fig, ax = plt.subplots(1,figsize=(12,8))
 sns.kdeplot(new_df.Hour, new_df.TotalInteractions, cmap='Blues',
             shade=True,thresh=0.05,clip=(-1,300))
-# plt.scatter(new_df.Hour, new_df.TotalInteractions,color = 'orangered')
+
 
 # Verfified Engagement
 
 data_for_plots = new_df.copy()
 verified_end = data_for_plots.groupby('AreVerified',as_index=False).agg({'TotalInteractions':'sum',})
-fig = px.bar(verified_end,
+fig1 = px.bar(verified_end,
             x = 'AreVerified',
             y = 'TotalInteractions',
             color = 'TotalInteractions',
             color_continuous_scale ='Rainbow',
             title = "Engagement By User Type")
-# fig.show()
+# fig1.show()
 
-# Engagement - Date 
-tweets_dates = new_df.Hour
-
-# Location/Tweets
-
-
-# NLP Analysis 
-# Modules needed for Sentiment Analysis 
-
-# from textblob import TextBlob
-# from wordcloud import WordCloud
-# import nltk    
-# nltk.download('all')
-
-# defining function to split The sentiment between polarity and sibjectivity 
-
-# preprocessing the text -> 
-
-
-new_df.text = new_df.text.str.lower()
-new_df.text.apply(lambda row:re.sub('@[^\s]+','',row))
-# removing hashtags
-new_df.text = new_df.text.apply(lambda row:re.sub(r'\B#\S+','',row))
-# removing https: 
-new_df.text = new_df.text.apply(lambda row:re.sub(r"http\S+","",row))
-# removing special charecters from the text 
-new_df.text = new_df.text.apply(lambda row:" ".join(re.findall(r'\w+',row)))
-# removing multiple spaces with one space 
-new_df.text = new_df.text.apply(lambda row: re.sub(r'\s+',' ',row,flags=re.I))
-# removing special charecter from the username 
-new_df.user_name = new_df.user_name.apply(lambda row:" ".join(re.findall(r'\w+',row)))
-
-
-
-
-# %%
+#%%
