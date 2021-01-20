@@ -10,21 +10,16 @@ from plotly.subplots import make_subplots
 import re
 from textblob import TextBlob
 from wordcloud import WordCloud
-
-
-
+from datetime import datetime, date, timedelta
 data = pd.read_csv(r"vaccination_tweets.csv")
 
 ## Defining variables which describe the dataset 
-
-
 data_type = data.dtypes
 data_columns = data.columns
 data_null = len(data.isna())
 data_len = len(data)
 list_of_regex = [r'@[^\s]+',r'\B#\S+',r"http\S+",r'\w+']
 findall_regex_list = [r'\w+']
-
 ## deffining dfunctions to be used through the dataset 
 
 def removeNull(df):
@@ -35,16 +30,11 @@ def removeNull(df):
 
 new_df = removeNull(data)
 
-
 def onlyNums(elem): return re.sub("\D+", "",elem) 
 
 def str_to_datetime(row): return date.today() - datetime.strptime(str(row[:10]),'%Y-%m-%d').date() 
 
-def df_min_max(row):
-    return {
-            "smallest":min(row),
-            "biggest": max(row)
-            }
+def df_min_max(row): return {"smallest":min(row),"biggest": max(row)}
 
 def avg_count(element,creteria):
     count = 0 
@@ -93,7 +83,7 @@ def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
 def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
 # Verified Or Not 
-from datetime import datetime, date, timedelta
+
 date_list = new_df['user_created']
 today_dates=[]
 
@@ -109,7 +99,6 @@ unvar_pct = round(Amount_of_unver/(total_accounts - Amount_of_unver) * 10, 2)
 
 
 # Account Age
-
 lis = list(new_df["user_created"].apply(lambda row: str_to_datetime(row)))
 new_df['days_old'] = [int(onlyNums(str(i)[:8])) for i in lis]
 
@@ -122,7 +111,7 @@ quartile_range = [i * 0.25 for i in range(1,4)]
 quantiles = np.quantile(new_df['days_old'],quantile_range)
 quartile =  np.quantile(new_df['days_old'],quartile_range)
 
-# # Total tweet Engagement 
+# Total tweet Engagement 
 
 total_interactions = []
 for row1,row2 in zip(new_df['retweets'],new_df['favorites']):
