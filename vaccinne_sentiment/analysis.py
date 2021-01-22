@@ -1,11 +1,10 @@
-
-#%%
 import pandas as pd 
 import numpy as np  
 import re
 from textblob import TextBlob
 from wordcloud import WordCloud
 from datetime import datetime, date, timedelta
+import csv 
 
 data = pd.read_csv(r"vaccination_tweets.csv")
 
@@ -83,18 +82,6 @@ def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
 
 def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
-# Bar Chart 
-
-def make_fig(row1,row2,title):
-    data_for_plots = new_df.copy()
-    verified_end = data_for_plots.groupby(row1,as_index=False).agg({row2:'sum',})
-    fig1 = px.bar(verified_end,
-                x = row1,
-                y = row2,
-                color = row2,
-                color_continuous_scale ='Rainbow',
-                title = title)
-    fig1.show()
 
 """ Below is cleaning the data needed in order to analysis the tweets """
 
@@ -194,9 +181,13 @@ for words in list_of_tweets:
 actual_hashtags,actual_mentions,actual_media = list_builder(list_of_hashtags),list_builder(list_of_mentions),list_builder(list_media)
 
 mentions = ["".join(re.sub(r'\s+','',i,flags=re.I)) for i in actual_mentions]
+hashtags = ["".join(i.split('#')) for i in actual_hashtags]
+n_mentions = ["".join(i.split('@')) for i in mentions]
 
-mentions_max_count = max_value(mentions)
-hashtags_max_values = max_value(actual_hashtags)
+hashtags_sent = pd.DataFrame()
+hashtags_sent['Hastags'] = hashtags
+hashtags_sent['Polarity'] = hashtags_sent.Hastags.apply(lambda row: Text_polarity(row))
+hashtags_sent['Subjectivty'] = hashtags_sent.Hastags.apply(lambda row: Text_subjectivity(row))
 
 
 p1=0
@@ -219,4 +210,16 @@ new_df['subjectivty'] = new_df.tweets.apply(lambda row: Text_subjectivity(row))
 
 
 
+field_names = ['id', 'user_name', 'user_location', 'user_description', 'user_created',
+       'user_followers', 'user_friends', 'user_favourites', 'user_verified',
+       'date', 'tweets', 'hashtags', 'source', 'retweets', 'favorites',
+       'is_retweet', 'AreVerified', 'days_old', 'TotalInteractions',
+       'below_above', 'Hour', 'polarity', 'subjectivty']
 
+#     output_dict = dict(method='zip',archive_name='output_data.csv')
+
+
+dict_df = new_df.to_dict()
+import json
+with open('output.json','w') as file_df:
+    dict_df = json.dump(dict_df,file_df)
