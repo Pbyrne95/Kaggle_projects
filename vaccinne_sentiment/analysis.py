@@ -11,15 +11,19 @@ import re
 from textblob import TextBlob
 from wordcloud import WordCloud
 from datetime import datetime, date, timedelta
+
+
 data = pd.read_csv(r"vaccination_tweets.csv")
 
 ## Defining variables which describe the dataset 
+
 data_type = data.dtypes
 data_columns = data.columns
 data_null = len(data.isna())
 data_len = len(data)
 list_of_regex = [r'@[^\s]+',r'\B#\S+',r"http\S+",r'\w+']
 findall_regex_list = [r'\w+']
+
 ## deffining dfunctions to be used through the dataset 
 
 def removeNull(df):
@@ -83,7 +87,6 @@ def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
 def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
 # Verified Or Not 
-
 date_list = new_df['user_created']
 today_dates=[]
 
@@ -164,20 +167,15 @@ loc_df = loc_df.replace({"snd_loc": state_fix})
 new_df['Hour'] = sorted(pd.DatetimeIndex(new_df['date']).hour)
 new_df['Hour'] = new_df.Hour.apply(lambda row: row +1)
 
-
 # Engagement - Date 
 tweets_dates = new_df.Hour
 
 # Location/Tweets
 
-
 # NLP Analysis 
 
-
 # preprocessing the text for Sentimental analysis -> 
-
 new_df.tweets = new_df.tweets.str.lower()
-
 p1=0
 run_time = len(list_of_regex)-1
 while p1 < run_time:
@@ -187,6 +185,7 @@ while p1 < run_time:
     elif p1 == run_time:
         new_df.tweets = new_df.tweets.apply(lambda row: re.sub(r'\s+',' ',row,flags=re.I))
         p1+=1
+
 
 # Dealing with special charecters
 new_df.tweets = new_df.tweets.apply(lambda row:findall_regax(row,findall_regex_list[0]))
@@ -206,14 +205,12 @@ sns.heatmap(corr,annot=True)
 # plt.show()
 
 #Scatter plot between Hour and interactions
-
 fig, ax = plt.subplots(1,figsize=(12,8))
 sns.kdeplot(new_df.Hour, new_df.TotalInteractions, cmap='Blues',
             shade=True,thresh=0.05,clip=(-1,300))
 
 
 # Verfified Engagement
-
 data_for_plots = new_df.copy()
 verified_end = data_for_plots.groupby('AreVerified',as_index=False).agg({'TotalInteractions':'sum',})
 fig1 = px.bar(verified_end,
@@ -222,6 +219,6 @@ fig1 = px.bar(verified_end,
             color = 'TotalInteractions',
             color_continuous_scale ='Rainbow',
             title = "Engagement By User Type")
-# fig1.show()
+fig1.show()
 
 #%%
