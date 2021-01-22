@@ -110,7 +110,9 @@ def make_fig(row1,row2,title):
     fig1.show()
 
 """ Below is cleaning the data needed in order to analysis the tweets """
+
 # Verified Or Not 
+
 date_list = new_df['user_created']
 today_dates=[]
 
@@ -125,6 +127,7 @@ unvar_pct = round(Amount_of_unver/(total_accounts - Amount_of_unver) * 10, 2)
 
 
 # Account Age
+
 lis = list(new_df["user_created"].apply(lambda row: str_to_datetime(row)))
 new_df['days_old'] = [int(onlyNums(str(i)[:8])) for i in lis]
 
