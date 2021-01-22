@@ -2,11 +2,6 @@
 #%%
 import pandas as pd 
 import numpy as np  
-from matplotlib import pyplot as plt
-import seaborn as sns
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import re
 from textblob import TextBlob
 from wordcloud import WordCloud
@@ -88,14 +83,6 @@ def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
 
 def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
-#Scatter plot between Hour and interactions
-def make_kdeplot(row1,row2):
-    fig, ax = plt.subplots(1,figsize=(12,8))
-    sns.kdeplot(new_df.row1, new_df.row2, cmap='Blues',
-                shade=True,thresh=0.05,clip=(-1,300))
-
-kde_interaction = make_kdeplot(new_df.Hour, new_df.TotalInteractions)
-
 # Bar Chart 
 
 def make_fig(row1,row2,title):
@@ -130,18 +117,15 @@ unvar_pct = round(Amount_of_unver/(total_accounts - Amount_of_unver) * 10, 2)
 
 lis = list(new_df["user_created"].apply(lambda row: str_to_datetime(row)))
 new_df['days_old'] = [int(onlyNums(str(i)[:8])) for i in lis]
-
 account_ages = df_min_max(new_df['days_old'])
 
 #Calculating interquertile range 
-
 quantile_range = [i/10 for i in range(1,10)]
 quartile_range = [i * 0.25 for i in range(1,4)]
 quantiles = np.quantile(new_df['days_old'],quantile_range)
 quartile =  np.quantile(new_df['days_old'],quartile_range)
 
 # Total tweet Engagement 
-
 total_interactions = []
 for row1,row2 in zip(new_df['retweets'],new_df['favorites']):
     total_interactions.append(row1 + row2)
@@ -176,13 +160,23 @@ state_fix = {'Ontario': 'Canada','United Arab Emirates': 'UAE','TX': 'USA','NY':
 
 loc_df = loc_df.replace({"snd_loc": state_fix}) 
 new_df['user_location'] = loc_df["snd_loc"]
-new_df['Hour'] = sorted(pd.DatetimeIndex(new_df['date']).hour)
+new_df['Hour'] = pd.DatetimeIndex(new_df['date']).hour
 new_df['Hour'] = new_df.Hour.apply(lambda row: row +1)
 
-# Engagement - Date 
-
-
 # Location/Tweets
+
+
+# Engagement - Date 
+dates = list(pd.DatetimeIndex(new_df['date']).date)
+dates = [onlyNums(str(i)) for i in dates]
+
+locations = list(new_df['user_location'])
+dates_interactions=dict()
+for row1,row2 in zip(dates,total_interactions):
+    if row1 not in dates_interactions and row2 != None:
+        dates_interactions[row1] = row2
+    elif row1 in dates_interactions and row2 != None:
+        dates_interactions[row1] += row2
 
 
 # NLP Analysis - preprocessing the text for Sentimental analysis -> 
@@ -223,15 +217,6 @@ new_df.tweets = new_df.tweets.apply(lambda row:findall_regax(row,findall_regex_l
 new_df['polarity'] = new_df.tweets.apply(lambda row: Text_polarity(row))
 new_df['subjectivty'] = new_df.tweets.apply(lambda row: Text_subjectivity(row))
 
-compare_times_df = new_df.Hour,new_df.tweets,new_df.polarity,new_df.subjectivty
-
-# Data Visulasation 
-
-corr = new_df.corr()
-plt.figure(figsize=(10,7))
-sns.heatmap(corr,annot=True)
 
 
 
-
-#%%
