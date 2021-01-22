@@ -23,7 +23,10 @@ data_len = len(data)
 list_of_regex = [r'@[^\s]+',r'\B#\S+',r"http\S+",r'\w+']
 findall_regex_list = [r'\w+']
 
-## deffining dfunctions to be used through the dataset 
+
+""" Defining functions which will be used to clean and analysis the data """
+
+# deffining dfunctions to be used through the dataset 
 
 def removeNull(df):
     for elem in df.columns:
@@ -106,6 +109,7 @@ def make_fig(row1,row2,title):
                 title = title)
     fig1.show()
 
+""" Below is cleaning the data needed in order to analysis the tweets """
 # Verified Or Not 
 date_list = new_df['user_created']
 today_dates=[]
