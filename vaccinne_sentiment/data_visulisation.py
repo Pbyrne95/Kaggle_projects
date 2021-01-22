@@ -11,9 +11,11 @@ data = {}
 with open('output.json','r') as json_file:
     data = json.load(json_file)
 
+
+
 # Data Visulasation 
 new_df = pd.DataFrame(data)
-print(new_df)
+print(new_df.polarity.dtypes)
 
 corr = new_df.corr()
 plt.figure(figsize=(10,7))
@@ -22,10 +24,8 @@ sns.heatmap(corr,annot=True)
 
 # Scatter plot between Hour and interactions
 
-def make_kdeplot(df,row,row2):
-    fig, ax = plt.subplots(1,figsize=(12,8))
-    sns.kdeplot(df.row, df.row2, cmap='Blues',
-    shade=True,thresh=0.05,clip=(-1,300))
+fig, ax = plt.subplots(1,figsize=(12,8))
+sns.kdeplot(new_df.Hour,new_df.TotalInteractions, cmap='Blues',shade=True,thresh=0.05,clip=(-1,300))
 
 
 
@@ -42,4 +42,19 @@ fig = px.scatter(daysforplot,
 
 fig.show()
 
+fig, ax = plt.subplots(figsize=(8, 6))
+l1,l2 = new_df.polarity,new_df.subjectivty
+list_sum = []
+for row1,row2 in zip(l1,l2):
+    list_sum.append(row1+row2)
+
+new_df['total'] = list_sum
+
+# Plot histogram of the polarity values
+new_df.total.hist(bins=[-0.5, -0.25, 0.25, 0.5,],
+             ax=ax,
+             color="purple")
+
+plt.title("Sentiments from Tweets in the last 30 days")
+plt.show()
 #%%
