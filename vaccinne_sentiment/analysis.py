@@ -12,7 +12,6 @@ from textblob import TextBlob
 from wordcloud import WordCloud
 from datetime import datetime, date, timedelta
 
-
 data = pd.read_csv(r"vaccination_tweets.csv")
 
 ## Defining variables which describe the dataset 
@@ -86,10 +85,30 @@ def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
 
 def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
+#Scatter plot between Hour and interactions
+def make_kdeplot(row1,row2):
+    fig, ax = plt.subplots(1,figsize=(12,8))
+    sns.kdeplot(new_df.row1, new_df.row2, cmap='Blues',
+                shade=True,thresh=0.05,clip=(-1,300))
+
+kde_interaction = make_kdeplot(new_df.Hour, new_df.TotalInteractions)
+
+# Bar Chart 
+
+def make_fig(row1,row2,title):
+    data_for_plots = new_df.copy()
+    verified_end = data_for_plots.groupby(row1,as_index=False).agg({row2:'sum',})
+    fig1 = px.bar(verified_end,
+                x = row1,
+                y = row2,
+                color = row2,
+                color_continuous_scale ='Rainbow',
+                title = title)
+    fig1.show()
+
 # Verified Or Not 
 date_list = new_df['user_created']
 today_dates=[]
-
 
 new_df['AreVerified'] = new_df.user_verified.apply(lambda row: "Verified" if row == True else "Unverified")
 
@@ -134,10 +153,38 @@ new_df['below_above'] = new_df.tweets.apply(lambda row: "Above_Average" if len(r
 abv_avg,avg,blw_agv = avg_count(new_df["below_above"],"Above_Average"),avg_count(new_df["below_above"],"Average"),avg_count(new_df["below_above"],"Below_Average")
 abv_pcnt,avg_pcnt,blw_pcnt = total_percentage(new_df["below_above"],abv_avg),total_percentage(new_df["below_above"],avg),total_percentage(new_df["below_above"],blw_agv)
 
+
+# fixing user_location
+loc_df = new_df['user_location'].str.split(',',expand=True)
+loc_df=loc_df.rename(columns={0:'fst_loc',1:'snd_loc'})
+
+# Remove Spaces 
+loc_df['snd_loc'] = loc_df['snd_loc'].str.strip()
+# Rename of places 
+state_fix = {'Ontario': 'Canada','United Arab Emirates': 'UAE','TX': 'USA','NY': 'USA'
+            ,'FL': 'USA','England': 'UK','Watford': 'UK','GA': 'USA','IL': 'USA'
+            ,'Alberta': 'Canada','WA': 'USA','NC': 'USA','British Columbia': 'Canada','MA': 'USA','ON':'Canada'
+            ,'OH':'USA','MO':'USA','AZ':'USA','NJ':'USA','CA':'USA','DC':'USA','AB':'USA','PA':'USA','SC':'USA'
+            ,'VA':'USA','TN':'USA','New York':'USA','Dubai':'UAE','CO':'USA'}
+
+loc_df = loc_df.replace({"snd_loc": state_fix}) 
+new_df['user_location'] = loc_df["snd_loc"]
+new_df['Hour'] = sorted(pd.DatetimeIndex(new_df['date']).hour)
+new_df['Hour'] = new_df.Hour.apply(lambda row: row +1)
+
+# Engagement - Date 
+
+
+# Location/Tweets
+
+
+# NLP Analysis - preprocessing the text for Sentimental analysis -> 
 # Hashtag words and  Mentions Count 
 startHash,startsMen,startshttp,end = '#','@','https',' '
 list_of_hashtags,list_of_mentions,list_media = [],[],[]
 list_of_tweets = new_df.tweets
+new_df.tweets = new_df.tweets.str.lower()
+
 for words in list_of_tweets:
     list_of_hashtags.append(words[words.rfind(startHash):words.rfind(end)])
     list_of_mentions.append(words[words.rfind(startsMen):words.rfind(end)])
@@ -150,32 +197,7 @@ mentions = ["".join(re.sub(r'\s+','',i,flags=re.I)) for i in actual_mentions]
 mentions_max_count = max_value(mentions)
 hashtags_max_values = max_value(actual_hashtags)
 
-# Account Followers 
-loc_df = new_df['user_location'].str.split(',',expand=True)
-loc_df=loc_df.rename(columns={0:'fst_loc',1:'snd_loc'})
 
-# Remove Spaces 
-loc_df['snd_loc'] = loc_df['snd_loc'].str.strip()
-# Rename States 
-state_fix = {'Ontario': 'Canada','United Arab Emirates': 'UAE','TX': 'USA','NY': 'USA'
-            ,'FL': 'USA','England': 'UK','Watford': 'UK','GA': 'USA','IL': 'USA'
-            ,'Alberta': 'Canada','WA': 'USA','NC': 'USA','British Columbia': 'Canada','MA': 'USA','ON':'Canada'
-            ,'OH':'USA','MO':'USA','AZ':'USA','NJ':'USA','CA':'USA','DC':'USA','AB':'USA','PA':'USA','SC':'USA'
-            ,'VA':'USA','TN':'USA','New York':'USA','Dubai':'UAE','CO':'USA'}
-
-loc_df = loc_df.replace({"snd_loc": state_fix}) 
-new_df['Hour'] = sorted(pd.DatetimeIndex(new_df['date']).hour)
-new_df['Hour'] = new_df.Hour.apply(lambda row: row +1)
-
-# Engagement - Date 
-tweets_dates = new_df.Hour
-
-# Location/Tweets
-
-# NLP Analysis 
-
-# preprocessing the text for Sentimental analysis -> 
-new_df.tweets = new_df.tweets.str.lower()
 p1=0
 run_time = len(list_of_regex)-1
 while p1 < run_time:
@@ -191,7 +213,6 @@ while p1 < run_time:
 new_df.tweets = new_df.tweets.apply(lambda row:findall_regax(row,findall_regex_list[0]))
 
 #initialising sentiment analysis using Textblob
-
 new_df['polarity'] = new_df.tweets.apply(lambda row: Text_polarity(row))
 new_df['subjectivty'] = new_df.tweets.apply(lambda row: Text_subjectivity(row))
 
@@ -202,23 +223,8 @@ compare_times_df = new_df.Hour,new_df.tweets,new_df.polarity,new_df.subjectivty
 corr = new_df.corr()
 plt.figure(figsize=(10,7))
 sns.heatmap(corr,annot=True)
-# plt.show()
-
-#Scatter plot between Hour and interactions
-fig, ax = plt.subplots(1,figsize=(12,8))
-sns.kdeplot(new_df.Hour, new_df.TotalInteractions, cmap='Blues',
-            shade=True,thresh=0.05,clip=(-1,300))
 
 
-# Verfified Engagement
-data_for_plots = new_df.copy()
-verified_end = data_for_plots.groupby('AreVerified',as_index=False).agg({'TotalInteractions':'sum',})
-fig1 = px.bar(verified_end,
-            x = 'AreVerified',
-            y = 'TotalInteractions',
-            color = 'TotalInteractions',
-            color_continuous_scale ='Rainbow',
-            title = "Engagement By User Type")
-fig1.show()
+
 
 #%%
