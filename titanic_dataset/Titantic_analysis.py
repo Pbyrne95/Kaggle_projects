@@ -50,21 +50,21 @@ check_na = data_train_df.isnull().sum()
 data_train_df["Age"] = data_train_df.Age.apply(lambda row: round(row))
 
 # distribution of the dataset 
-
+#%%
 hist_plot = data_train_df.hist(figsize=(16,8))
 
 # checking the correlated variables 
-
 #%%
+
 corr = data_train_df.corr()
 plt.figure(figsize=(10,7))
-# sns.heatmap(corr,annot=True)
+sns.heatmap(corr,annot=True)
 
 
 # Let compare the number of people survived vs not survived 
 
-
 #%%
+
 surive_dict = dict()
 surive_dict['survided'] = len([i for i in data_train_df.Survived if i == 1])
 surive_dict['died'] = len([i for i in data_train_df.Survived if i == 0])
@@ -84,7 +84,7 @@ plt.ylabel("Number of people")
 # plt.show()
 
 # find survival rate based on age 
-
+#%%
 most_survived_age = dict()
 amount,max_age = 0,0
 for age,survival in zip(data_train_df.Age,data_train_df.Survived):
@@ -100,6 +100,9 @@ for age,survival in zip(data_train_df.Age,data_train_df.Survived):
 # top ten ages for survival 
 
 sorted_dict = sorted(most_survived_age.items(), key=lambda i:i[1])
+oldest_passengers = sorted(most_survived_age.items(), key=lambda i:i[0])[-30:]
+
+print(oldest_passengers)
 most_survived = sorted_dict[-10:]
 
 # distribution of ages 
@@ -112,11 +115,24 @@ plt.ylabel("Number of people")
 # plt.show()
 
 # comparision between number of males and females survived 
-
+#%%
 males_survival = data_train_df[(data_train_df.Sex == 1) & (data_train_df.Survived == 1)]["Sex"].count()
 female_survival = data_train_df[(data_train_df.Sex == 0) & (data_train_df.Survived == 1)]["Sex"].count()
 
+text_sex = ["males","females"]
+new_labels = [males_survival,female_survival]
+for i in range(len(text)):
+    plt.bar(text_sex[i],new_labels[i])
+    plt.text(text_sex[i],new_labels[i],str(new_labels[i]),fontsize=16,fontweight='bold')
+plt.title('surival between sexes')
+plt.xlabel("sex")
+plt.ylabel("count")
+# plt.show()
+
 # Number of Survived people based on the class
+lis=[data_train_df[(data_train_df.Pclass == 1) & (data_train_df.Survived == 1)],data_train_df[(data_train_df.Pclass == 2) & (data_train_df.Survived == 1)],data_train_df[(data_train_df.Pclass == 2) & (data_train_df.Survived == 1)]]
+def check_leng(row): return len(row)
+new_lis = list(map(check_leng,lis))
 
 
 
