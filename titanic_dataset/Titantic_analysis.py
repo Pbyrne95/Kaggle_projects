@@ -1,4 +1,5 @@
 #%%
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,6 +12,7 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.metrics import precision_score, recall_score
+
 
 # To do list in commments 
 
@@ -60,7 +62,6 @@ corr = data_train_df.corr()
 plt.figure(figsize=(10,7))
 sns.heatmap(corr,annot=True)
 
-
 # Let compare the number of people survived vs not survived 
 
 #%%
@@ -100,9 +101,11 @@ for age,survival in zip(data_train_df.Age,data_train_df.Survived):
 # top ten ages for survival 
 
 sorted_dict = sorted(most_survived_age.items(), key=lambda i:i[1])
-oldest_passengers = sorted(most_survived_age.items(), key=lambda i:i[0])[-30:]
+x =  len(sorted_dict)//2
 
+oldest_passengers = sorted(most_survived_age.items(), key=lambda i:i[0])[x+5:]
 print(oldest_passengers)
+
 most_survived = sorted_dict[-10:]
 
 # distribution of ages 
