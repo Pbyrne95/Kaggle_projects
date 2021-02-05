@@ -1,7 +1,5 @@
 substring = "abcabcbb"
 substring1 = "pwwkew"
-def to_leng(x):
-    return [(x[k+1]-x[k])>=0 for k in range(len(x)-1)]
 
 def to_leng1(x):
     p1 = 0
@@ -53,6 +51,6 @@ def all_together(param):
     return max([len(to_leng1(i)) for i in all_nums])
     
 
-x = [0,2,3,4]
+
 print(all_together(substring))
 
