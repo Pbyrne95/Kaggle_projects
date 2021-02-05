@@ -13,7 +13,7 @@ def to_leng1(x):
             if temp:
                 list_of_true.append(temp)
         elif p2 == len(x):
-            temp = (x[p1-1]+1 == x[-1])
+            temp = (x[p1-1]+1 == x[p1])
             if temp:
                 list_of_true.append(temp)
         p1+=1
@@ -35,7 +35,7 @@ def lengthOfLongestSubstring(s):
     p1 = 0
     all_indexs = ''
     while p1 < len(s)-1:
-        if s[p1] != s[p1+1] and s[p1] and s[p1] not in seen:
+        if s[p1] != s[p1+1] and s[p1] not in seen:
             return_sub +=  s[p1]
             all_indexs += str(p1)
             seen.append(s[p1])
@@ -47,11 +47,12 @@ def lengthOfLongestSubstring(s):
     return record
 
 def all_together(param):
+    import numpy as np
     iter = lengthOfLongestSubstring(param)
     all_nums = [all_ints(i) for i in iter]
     return max([len(to_leng1(i)) for i in all_nums])
     
 
 x = [0,2,3,4]
-print(all_together(substring1))
+print(all_together(substring))
 
