@@ -3,13 +3,13 @@ let to_leng1 = function(x) {
     let p2 = 1
     let list_of_true = []
     while(p1 < x.length){
-        let = false
+        let temp = false
         if(p2 < x.length)
             temp = (x[p1]+1 == x[p2])
             if(temp){
                 list_of_true.push(temp)
             }
-        else if (p2 == len(x)){
+        else if (p2 == x.length){
             temp = (x[p1-1]+1 == x[p1])
             if(temp){
                 list_of_true.push(temp)
@@ -23,12 +23,14 @@ let to_leng1 = function(x) {
 
 let all_ints = function(x){
     all_nums = [];
-    for(let i = 0; i < x.length; i++){
-        for(let nums = 0; nums < i.length; nums++){
-            all_nums.push(Number(nums));
+    
+    for(let i = 0; i < x.length; i ++){
+        for(let j = 0; j < x[i].length; j++){
+            all_nums.push(Number(x[i][j]))
         }
-    return all_nums;
-}
+    }
+    return all_nums
+
 }
 
 let lengthOfLongestSubstring = (s) =>{
@@ -49,11 +51,24 @@ let lengthOfLongestSubstring = (s) =>{
         pos_1+=1;
     }
 
-    let all_numbers = record.forEach(all_ints)
-    return record;
+    return record
 
+}
+
+let all_together = (s) => {
+    let iter = lengthOfLongestSubstring(s)
+    let only_numbers = []
+    for(let i = 0; i < iter.length; i ++){
+        only_numbers.push(all_ints(iter[i]))
+    }
+    let truth = []
+    for(let j = 0; j < only_numbers.length; j++){
+        truth.push(to_leng1(only_numbers[j]).length)
+    }
+
+    return Math.max(...truth)
 }
 
 let substring = "abcabcbb"
 let substring1 = "pwwkew"
-console.log(lengthOfLongestSubstring(substring))
+console.log(all_together(substring))
