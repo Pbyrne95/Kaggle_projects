@@ -29,7 +29,7 @@ def maxProductPath(grid):
         p1+=1
     
     # now we have all numbers less then one - find all numbers that match 
-    # -- cant go to higher number -> higher - but can do lower -> higher
+    # -- cant go to higher number -> lower -> higher - but can do lower -> higher and lower -> lower ->..
     p1 = 0
     nums_to_product = []
     while p1 < len(nums_less_one):
@@ -41,15 +41,17 @@ def maxProductPath(grid):
                 nums_to_product.append(lists)
 
         p1+=1
-    actual_product = [val for sublist in nums_to_product for val in sublist]
+    actual_product = [val for sublist in nums_to_product for val in sublist if val != 0]
     
     return prod(actual_product)
+
+
 
 
 ## solution 2 - refactered solution one 
 
 class Solution:
-    def maxProductPath(self, grid: List[List[int]]) -> int:
+    def maxProductPath1(self, grid):
         n_r = len(grid); n_c = len(grid[0])
         dp_max = [[0]*n_c for _ in range(n_r)]
         dp_min = [[0]*n_c for _ in range(n_r)]
@@ -72,3 +74,6 @@ class Solution:
 
         return dp_max[n_r-1][n_c-1]%(10**9+7)
 
+
+grid2 = [[1,4,4,0],[-2,0,0,1],[1,-1,1,1]]
+print(maxProductPath(grid2))
