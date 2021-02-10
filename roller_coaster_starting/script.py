@@ -149,7 +149,7 @@ def two_nemeric(dataf,colmnName1,columnName2):
 
 
 
-print(two_nemeric(rcs,"height","length"))
+
 
 
 plt.clf()
