@@ -17,7 +17,6 @@ data_len = len(data)
 list_of_regex = [r'@[^\s]+',r'\B#\S+',r"http\S+",r'\w+']
 findall_regex_list = [r'\w+']
 
-
 """ Defining functions which will be used to clean and analysis the data """
 
 # deffining dfunctions to be used through the dataset 
@@ -82,7 +81,6 @@ def Text_polarity(lis): return TextBlob(lis).sentiment.polarity
 
 def Text_subjectivity(lis): return TextBlob(lis).sentiment.subjectivity
 
-
 """ Below is cleaning the data needed in order to analysis the tweets """
 
 # Verified Or Not 
@@ -99,9 +97,7 @@ total_accounts = len(new_df.AreVerified)
 var_pct = round(Amount_of_Ver / (total_accounts - Amount_of_Ver) * 10 ,2)
 unvar_pct = round(Amount_of_unver/(total_accounts - Amount_of_unver) * 10, 2)
 
-
 # Account Age
-
 lis = list(new_df["user_created"].apply(lambda row: str_to_datetime(row)))
 new_df['days_old'] = [int(onlyNums(str(i)[:8])) for i in lis]
 account_ages = df_min_max(new_df['days_old'])
@@ -131,9 +127,9 @@ new_df['below_above'] = new_df.tweets.apply(lambda row: "Above_Average" if len(r
 abv_avg,avg,blw_agv = avg_count(new_df["below_above"],"Above_Average"),avg_count(new_df["below_above"],"Average"),avg_count(new_df["below_above"],"Below_Average")
 abv_pcnt,avg_pcnt,blw_pcnt = total_percentage(new_df["below_above"],abv_avg),total_percentage(new_df["below_above"],avg),total_percentage(new_df["below_above"],blw_agv)
 
-
 # fixing user_location
 loc_df = new_df['user_location'].str.split(',',expand=True)
+
 loc_df=loc_df.rename(columns={0:'fst_loc',1:'snd_loc'})
 
 # Remove Spaces 
@@ -200,15 +196,12 @@ while p1 < run_time:
         new_df.tweets = new_df.tweets.apply(lambda row: re.sub(r'\s+',' ',row,flags=re.I))
         p1+=1
 
-
 # Dealing with special charecters
 new_df.tweets = new_df.tweets.apply(lambda row:findall_regax(row,findall_regex_list[0]))
-
+ 
 #initialising sentiment analysis using Textblob
 new_df['polarity'] = new_df.tweets.apply(lambda row: Text_polarity(row))
 new_df['subjectivty'] = new_df.tweets.apply(lambda row: Text_subjectivity(row))
-
-
 
 field_names = ['id', 'user_name', 'user_location', 'user_description', 'user_created',
        'user_followers', 'user_friends', 'user_favourites', 'user_verified',
@@ -216,10 +209,10 @@ field_names = ['id', 'user_name', 'user_location', 'user_description', 'user_cre
        'is_retweet', 'AreVerified', 'days_old', 'TotalInteractions',
        'below_above', 'Hour', 'polarity', 'subjectivty']
 
-#     output_dict = dict(method='zip',archive_name='output_data.csv')
-
+#output_dict = dict(method='zip',archive_name='output_data.csv')
 
 dict_df = new_df.to_dict()
+
 import json
 with open('output.json','w') as file_df:
     dict_df = json.dump(dict_df,file_df)

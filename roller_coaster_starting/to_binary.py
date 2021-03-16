@@ -1,15 +1,4 @@
 n=600
-def to_binary(n):
-    x=n
-    k=[]
-    while (n>0):
-        q=int(float(n%2))
-       
-        k.append(q)
-        n=(n-q)/2
-            
-    string= k[::-1]
-    return  "".join([str(i) for i in string])
 
 def to_binary_count(n):
     factors = 1
@@ -28,4 +17,49 @@ def to_binary_count(n):
             binary_str+='0'
             continue
     return binary_str
-print(to_binary_count(n))
+
+def binary_count(binary):
+    double = 1
+    double_list = [double]
+    binary_to_num=0
+    while len(double_list) < len(binary):
+        double = double * 2
+        double_list.append(double)
+
+    double_list = double_list[::-1]
+    for i in range(len(binary)):
+        if binary[i] == '1':
+            binary_to_num+=double_list[i]   
+    
+    return binary_to_num
+     
+def to_binary(n):
+    n =  int(n)
+    x=n
+    k=[]
+    while (n>0):
+        q=int(float(n%2))
+       
+        k.append(q)
+        n=(n-q)/2
+            
+    string= k[::-1]
+    return  "".join([str(i) for i in string])
+def works(binary):
+    decimal = 0
+    for digit in binary:
+        decimal = decimal*2 + int(digit)
+    return decimal
+
+
+
+p1=0
+placeHoler = ''
+while p1 < 13:
+    placeHoler +='1'
+    p1+=1
+
+
+print(to_binary(10))
+
+

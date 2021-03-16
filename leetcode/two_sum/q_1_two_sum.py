@@ -43,7 +43,7 @@ def twoSum(nums,target):
         else:
             iter_dict[current] = i 
     
-    
+   
 
 
 # Two Sum || 
@@ -76,3 +76,13 @@ def final_solution(numbers,target):
         else:
             return [p1 +1, p2 +1]
 print(final_solution(List,9))
+
+# iter_dict = dict()
+        
+# for i in range(len(nums)):
+#     num = nums[i]
+#     current = target - num
+#     if num in iter_dict:
+#         return [iter_dict[num],i]
+#     else:
+#         iter_dict[current] = i
