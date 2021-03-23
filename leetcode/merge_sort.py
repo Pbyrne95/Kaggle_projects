@@ -4,59 +4,40 @@ class Merge_sort:
         return len(L)//2
 
     
-    def sortSplit(self,L):
-        temp = 0
-        maxPos = len(L)-1
-
-        for i in range((len(L)-1)):
-            for j in range(len(L)-1,0,-1):
-                if(L[j] < L[j-1]):
-                    temp = L[j]
-                    L[j] = L[j-1]
-                    L[j-1] = temp
-        return L
-
-
     def mergeSort(self,arr):
-        mid = len(arr)//2
- 
-        # Dividing the array elements
-        L = arr[:mid]
- 
-        # into 2 halves
-        R = arr[mid:]
- 
-        # Sorting the first half
-        L = self.sortSplit(L)
+        # break cluase for recurrsion
+        if len(arr) > 1:
 
- 
-        # Sorting the second half
-        R = self.sortSplit(R)
+            midPoint = self.get_middle(arr)
 
-        i = j = k = 0
- 
-        # # Copy data to temp arrays L[] and R[]
-        while i < len(L) and j < len(R):
-            if L[i] < R[j]:
-                arr[k] = L[i]
-                i += 1
-            else:
-                arr[k] = R[j]
-                j += 1
-            k += 1
+            firstHalf = arr[:midPoint]
+            secondHalf = arr[midPoint:]
 
+            self.mergeSort(firstHalf)
+            self.mergeSort(secondHalf)
 
-        while i < len(L):
-            arr[k] = L[i]
-            i += 1
-            k += 1
- 
-        while j < len(R):
-            arr[k] = R[j]
-            j += 1
-            k += 1
+            i=j=k=0
+
+            while i < len(firstHalf) and j < len(secondHalf):
+                if firstHalf[i] < secondHalf[j]:
+                    arr[k] = firstHalf[i]
+                    i+=1
+                else:
+                    arr[k] = secondHalf[j]
+                    j+=1
+                k+=1
             
-        return arr
+            while i < len(firstHalf):
+                arr[k] = firstHalf[i]
+                i+=1
+                k+=1
+            while j < len(secondHalf):
+                arr[k] = secondHalf[j]
+                j+=1
+                k+=1
+
+            return arr
+
 
         
 
