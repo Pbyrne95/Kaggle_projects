@@ -6,6 +6,7 @@ from wordcloud import WordCloud
 from datetime import datetime, date, timedelta
 import csv 
 
+# Importing the dataset 
 data = pd.read_csv(r"vaccination_tweets.csv")
 
 ## Defining variables which describe the dataset 
