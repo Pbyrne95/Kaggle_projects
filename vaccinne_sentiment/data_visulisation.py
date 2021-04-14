@@ -7,6 +7,7 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import json
 
+#getting the json data
 data = {}
 with open('output.json','r') as json_file:
     data = json.load(json_file)
