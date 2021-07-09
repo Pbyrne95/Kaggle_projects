@@ -35,9 +35,6 @@ def two_coasters(a_name, a_park, b_name, b_park, dataf):
     plt.ylabel('Ranking')
     plt.show()
 
-
-
-
 plt.clf()
 
 # write function to plot top n rankings over time here:
@@ -53,14 +50,7 @@ def top_ranks(dataf,n):
 
 # print(top_ranks(all_data,150))
 
-
-
-
-
-
 plt.clf()
-
-
 
 # write function to plot histogram of column values here:
 def teo_numeric_vals(dataf,columnName):
@@ -83,7 +73,6 @@ def inversions(dataf,park):
     park_data = dataf[(dataf.park == park)]
     n_inversions = park_data.num_inversions
     len_coaster_name = range(len(park_data.name))
-
     plt.bar(len_coaster_name,n_inversions)
     plt.title("Number of inversation in {} park".format(park))
     plt.xlabel("Inversions")
@@ -92,10 +81,6 @@ def inversions(dataf,park):
     ax.set_xticks(len_coaster_name)
     ax.set_xticklabels(park_data.name,rotation=90)
     plt.show()
-
-
-
-
 
 
 plt.clf()
